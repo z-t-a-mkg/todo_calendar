@@ -3,16 +3,20 @@ import React from "react";
 type Props = {
     todoList: string[];
     handleEdit: (index: number) => void;
+    handleDelete: (index: number) => void;
     handleUpdate: () => void;
     editIndex: number | null;
     editText: string;
     setEditText: (text: string) => void;
+
+
 
 };
 
 export const TodoList: React.FC<Props> = ({
   todoList,
   handleEdit,
+  handleDelete,
   handleUpdate,
   editIndex,
   editText,
@@ -42,7 +46,7 @@ export const TodoList: React.FC<Props> = ({
             <div className="todoList">
                 <div>{todo}</div>
                 <button onClick={() => handleEdit(index)}>編集</button>
-                <button>削除</button>
+                <button onClick={() => handleDelete(index)}>削除</button>
             </div>
 
             </>

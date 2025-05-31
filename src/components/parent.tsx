@@ -56,6 +56,16 @@ export const Parent =() => {
         }
     };
 
+    // 削除状態管理
+    const [deleteIndex , setDeleteIndex] = useState<number | null>(null);
+
+
+    const handleDelete = (index: number) => {
+        const newList = todoList.filter((_, i) => i !== index);
+        setTodoList(newList);
+    };
+
+
 
 
     return(
@@ -75,6 +85,7 @@ export const Parent =() => {
                 editText = {editText}
                 editIndex = {editIndex}
                 setEditText = {setEditText}
+                handleDelete = {handleDelete}
             />
         </>
 
