@@ -10,7 +10,12 @@ type Props = {
 };
 
 
-export const InputForm : React.FC<Props> = ({onChange,onClick,value,placeholder,myRef,errMes}) => {
+export const InputForm : React.FC<Props> = ({
+    onChange,onClick,
+    value,
+    placeholder,
+    myRef,
+    errMes}) => {
     const isInvalid = value.trim() === "" || value.trim().length > 30;
     return(
         <>
