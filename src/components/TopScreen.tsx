@@ -3,11 +3,33 @@ import { InputForm } from './TaskInputForm.tsx';
 import { TodoList } from './TodoList.tsx';
 import { CompleteTodoList } from './CompleteTodoList.tsx';
 
+// FullCalendar
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import jaLocale from '@fullcalendar/core/locales/ja';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import type { DateClickArg } from '@fullcalendar/interaction';
+
 export const TopScreen = () => {
     // ----------state管理----------------
+    type eventObject = {
+        id?: string;
+        title?: string;
+        start?: Date | string;
+    };
+
     // inputform状態管理
     const [input, setInput] = useState<string>('');
     const [todoList, setTodoList] = useState<string[]>([]);
+
+    const [events, setEvents] = useState<eventObject[]>([
+        {
+            id: '1', // FullCalendarが期待するのは string 型
+            title: '既存イベント',
+            start: '2025-06-10',
+        },
+    ]);
 
     // エラーメッセージ状態管理
     const [errorMessage, setErrorMessage] = useState<string>('');
@@ -99,6 +121,17 @@ export const TopScreen = () => {
         setCompleteList(newList);
     };
 
+    //カレンダー日付クリック
+    const handleCalender = (info: DateClickArg) => {
+        const dateStr = info.dateStr;
+        const newEvent: eventObject = {
+            id: Date.now().toString(),
+            title: '新しいイベント',
+            start: dateStr,
+        };
+        setEvents([...events, newEvent]);
+    };
+
     return (
         <>
             <InputForm
@@ -125,6 +158,55 @@ export const TopScreen = () => {
                 completeList={completeList}
                 handleDeleteCompleted={handleDeleteCompleted}
             />
+
+            <FullCalendar
+               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]} 
+                initialView="dayGridMonth"
+                locales={[jaLocale]}
+                locale="ja"
+                headerToolbar={{
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek',
+                }}
+                events={events}
+                dateClick={handleCalender}
+                editable={true}
+                eventDrop={info => {
+                    if (!info.event.start) return;
+
+                    const updated = events.map(ev =>
+                        ev.id === info.event.id
+                            ? { ...ev, start: info.event.start as Date } // ← 型を明示
+                            : ev,
+                    );
+
+                    setEvents(updated);
+                }}
+            />
         </>
     );
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
