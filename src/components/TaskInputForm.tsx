@@ -1,44 +1,37 @@
-import React from 'react';
+import type { TaskModalProps } from '../Type/Types';
 
-type Props = {
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onClick: () => void;
-    value: string;
-    placeholder: string;
-    myRef: React.RefObject<HTMLInputElement>;
-    errMes: string;
-};
+export const TaskModal = ({
+    inputRef,
+    isOpen,
+    isDate,
+    inputTask,
+    onClose,
+    handleChange,
+    handleAddClick,
+    errorMessage,
+}: TaskModalProps) => {
+    // isModalOpenがfalseの場合はmodal非表示
+    if (!isOpen) return null;
 
-export const InputForm: React.FC<Props> = ({
-    onChange,
-    onClick,
-    value,
-    placeholder,
-    myRef,
-    errMes,
-}) => {
-    const isInvalid = value.trim() === '' || value.trim().length > 30;
+    //Disabled制御
+    const isDisabled = errorMessage !== null || inputTask === '';
+
     return (
-        <>
-            <h2>タスクを追加</h2>
-
-            <div className="inputTodoBox">
+        <div className="modal-overlay">
+            <div className="modal_content">
+                <h3>{isDate}にタスクを追加</h3>
                 <input
-                    className="inputForm"
-                    placeholder={placeholder}
+                    ref={inputRef}
                     type="text"
-                    onChange={onChange}
-                    ref={myRef}
-                    value={value}
-                    onKeyDown={e => {
-                        if (e.key === 'Enter' && !isInvalid) onClick();
-                    }}
+                    placeholder="30文字以内にタスクを追加してください。"
+                    onChange={handleChange}
                 />
-                <button onClick={onClick} disabled={isInvalid}>
+                <div className="error_massage">{errorMessage}</div>
+                <button disabled={isDisabled} onClick={handleAddClick}>
                     追加
                 </button>
-                {errMes && <p style={{ color: 'red' }}>{errMes}</p>}
+                <button onClick={onClose}>閉じる</button>
             </div>
-        </>
+        </div>
     );
 };
