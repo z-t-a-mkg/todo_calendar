@@ -75,61 +75,8 @@ button:focus-visible {
     }
 }
 
-.inputTodoBox {
-    width: 500px;
-    height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 50px;
-    background-color: #292626;
-}
 
-.inputForm,
-.todoList,
-.editForm {
-    width: 50%;
-    height: 50%;
-    margin-right: 5px;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: #1a1a1a;
-    cursor: pointer;
-    transition: border-color 0.25s;
-}
+.modal-overlay{
+    
 
-.todoList {
-    text-align: left;
-}
-
-.todoListContainer {
-    margin-bottom: 50px;
-    background-color: rgb(44, 35, 35);
-}
-
-.todoListBox {
-    display: flex;
-    width: 500px;
-    height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.editBtn,
-.deleteBtn,
-.updateBtn {
-    margin-right: 5px;
-}
-
-.deleteBtn {
-    background-color: red;
-}
-
-.completeList {
-    background-color: rgb(47, 70, 70);
 }
