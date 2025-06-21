@@ -9,29 +9,22 @@ import jaLocale from '@fullcalendar/core/locales/ja';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import type { DateClickArg } from '@fullcalendar/interaction';
 import { TaskModal } from './TaskInputForm';
+import { EditTaskForm } from './EditTaskForm';
+import type { EventClickArg } from '@fullcalendar/core';
 
 export const TopScreen = () => {
     // ----------state管理----------------
+    const [isModalOpen, setIsModalOpen] = useState(false); // modal開閉管理
+    const [selectedDate, setSelectedDate] = useState<string>(''); // どの日付をクリックしたか
+    const [events, setEvents] = useState<eventType[]>([]); //カレンダーイベント管理
+    const [inputTask, setInputTask] = useState<string>(''); //インプットフォーム管理
+    const [errorMessage, setErrorMessage] = useState<string | null>(null); // バリデーションメッセージ
+    const ref = useRef<HTMLInputElement>(null); //入力時フォーカス
 
-    // modal開閉管理
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    // どの日付をクリックしたか
-    const [selectedDate, setSelectedDate] = useState<string>('');
-
-    //インプットフォーム管理
-    const [inputTask, setInputTask] = useState<string>('');
-
-    // バリデーションメッセージ
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-    //タスク入力フォームフォーカス
-    const ref = useRef<HTMLInputElement>(null);
-
-    //
-    const [events, setEvents] = useState<eventType[]>([]);
-
+    const [editTask, setEditTask] = useState<eventType | null>(null); //タスク編集
+    const [isEditing, setIsEditing] = useState(false);
     // ----------副作用----------------
+
     // タスク入力フォームにフォーカス
     useEffect(() => {
         if (isModalOpen) {
@@ -39,17 +32,29 @@ export const TopScreen = () => {
         }
     }, [isModalOpen]);
 
-    // ----------イベント処理----------------
+    // ----------カレンダー処理----------------
 
-    ///////////カレンダー処理////////////
     // 日付クリック
     const handleCalender = (info: DateClickArg) => {
         setSelectedDate(info.dateStr);
+        setIsEditing(false); //編集モード解除
         setIsModalOpen(true);
     };
 
-    ///////////タスク入力フォーム////////////
-    // タスク追加ボタンクリック処理
+    // タスクアイコンクリック
+    const handleEditCalender = (info: EventClickArg) => {
+        setEditTask({
+            id: info.event.id,
+            title: info.event.title,
+             date: info.event.start?.toISOString().slice(0, 10) ?? '',
+        });
+        setIsEditing(true);
+        setIsModalOpen(true);
+    };
+
+    // ----------タスク入力----------------
+
+    // タスク「追加ボタン」クリック処理
     const handleAddClick = (): void => {
         setEvents([
             ...events,
@@ -59,6 +64,9 @@ export const TopScreen = () => {
                 date: selectedDate,
             },
         ]);
+        setIsModalOpen(false);
+        setInputTask('');
+        setErrorMessage(null);
     };
 
     // フォームバリデーション
@@ -76,21 +84,45 @@ export const TopScreen = () => {
     // タスク入力フォームmodal閉じる処理
     const handleClose = () => {
         setIsModalOpen(false);
+        setInputTask('');
+    };
+
+    // ----------タスク編集----------------
+    const handleEditSubmit = () => {
+        setEvents(prev =>
+            prev.map(event =>
+                event.id === editTask?.id
+                    ? { ...event, title: editTask.title, date: editTask.date }
+                    : event,
+            ),
+        );
+        setIsModalOpen(false);
     };
 
     return (
         <>
-            <TaskModal
-                isOpen={isModalOpen}
-                isDate={selectedDate}
-                onClose={handleClose}
-                handleChange={handleChange}
-                handleAddClick={handleAddClick}
-                inputTask={inputTask}
-                errorMessage={errorMessage}
-                inputRef={ref}
-            />
-
+            {!isEditing && (
+                <TaskModal
+                    isOpen={isModalOpen}
+                    isDate={selectedDate}
+                    onClose={handleClose}
+                    handleChange={handleChange}
+                    handleAddClick={handleAddClick}
+                    inputTask={inputTask}
+                    errorMessage={errorMessage}
+                    inputRef={ref}
+                />
+            )}
+            {isEditing && editTask && (
+                <EditTaskForm
+                    isOpen={isModalOpen}
+                    editTask={editTask}
+                    setEditTask={setEditTask}
+                    onClose={handleClose}
+                    onSubmit={handleEditSubmit}
+                    inputRef={ref}
+                />
+            )}
             <FullCalendar
                 //プラグイン設定
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -104,8 +136,12 @@ export const TopScreen = () => {
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek',
                 }}
+                //日付クリック
                 dateClick={handleCalender}
-
+                eventClick={handleEditCalender}
+                //ドラッグアンドドロップ可能
+                editable={true}
+                //追加後
                 events={events}
             />
         </>
