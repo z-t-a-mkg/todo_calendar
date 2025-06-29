@@ -19,18 +19,25 @@ export const TaskModal = ({
     return (
         <div className="modal-overlay">
             <div className="modal_content">
+                <div className="close-btn" onClick={onClose}>
+                </div>
+
                 <h3>{isDate}にタスクを追加</h3>
-                <input
-                    ref={inputRef}
-                    type="text"
-                    placeholder="30文字以内にタスクを追加してください。"
-                    onChange={handleChange}
-                />
-                <div className="error_massage">{errorMessage}</div>
-                <button disabled={isDisabled} onClick={handleAddClick}>
-                    追加
-                </button>
-                <button onClick={onClose}>閉じる</button>
+                <div className="task-box">
+                    <p className='item'>予定</p>
+                    <input id="task"
+                        ref={inputRef}
+                        type="text"
+                        placeholder="30文字以内にタスクを追加してください。"
+                        onChange={handleChange}
+                    />
+                    <div className="error_massage" style={{'color':'red'}}>{errorMessage}</div>
+                </div>
+                <div className="nonflex-btn">
+                    <button disabled={isDisabled} onClick={handleAddClick}>
+                        追加
+                    </button>
+                </div>
             </div>
         </div>
     );

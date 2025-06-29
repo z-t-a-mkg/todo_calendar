@@ -21,8 +21,38 @@ export type TaskModalProps = {
 export type EditTaskFormProps = {
     isOpen: boolean;
     editTask: eventType | null;
+    errorMessage: string | null;
     setEditTask: React.Dispatch<React.SetStateAction<eventType | null>>;
     onClose: () => void;
     onSubmit: () => void;
+    onDelete: () => void;
     inputRef: React.RefObject<HTMLInputElement | null>;
+    handleSubmitChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

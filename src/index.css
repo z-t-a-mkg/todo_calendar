@@ -1,11 +1,18 @@
+/* カラーコード */
+
 :root {
     font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     font-weight: 400;
+    --main-color1: #3c455c;
+    --main-color2: #dde2e3;
+    --main-color3: #9aacb8;
+    --main-color4: #b37c57;
+    --main-color5: #60412b;
 
     color-scheme: light dark;
-    color: rgba(255, 255, 255, 0.87);
-    background-color: #242424;
+    color: var(--main-color5);
+    background-color: var(--main-color2);
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;
@@ -42,7 +49,7 @@ h1 {
 }
 
 button {
-    width: 20%;
+    width: 30%;
     height: 50%;
     border-radius: 8px;
     border: 1px solid transparent;
@@ -50,12 +57,12 @@ button {
     font-size: 1em;
     font-weight: 500;
     font-family: inherit;
-    background-color: #1a1a1a;
+    background-color: #3c455c !important;
     cursor: pointer;
     transition: border-color 0.25s;
 }
 button:hover {
-    border-color: #646cff;
+    border-color: #9aacb8 !important;
 }
 button:focus,
 button:focus-visible {
@@ -64,19 +71,131 @@ button:focus-visible {
 
 @media (prefers-color-scheme: light) {
     :root {
-        color: #213547;
+        color: var(--main-color1);
         background-color: #ffffff;
     }
     a:hover {
         color: #747bff;
     }
     button {
-        background-color: #f9f9f9;
+        background-color: var(--main-color2);
     }
 }
 
+/* タスク入力/編集modal*/
+.modal-overlay {
+    position: fixed;
+    background-color: #ffffff;
+    border: solid 4px var(--main-color1);
+    top: 50%; /* 縦方向の中央に配置 */
+    left: 50%; /* 横方向の中央に配置 */
+    transform: translate(-50%, -50%); /* 完全に中央に配置するための補正 */
+    padding: 10px; /* モーダル内の余白を設定 */
+    width: 500px; /* モーダルの幅 */
+    height: 600px; /* モーダルの高さ */
+    z-index: 1000;
+    border-radius: 10px;
+}
 
-.modal-overlay{
-    
+.modal_content {
+    position: relative;
+    height: 100%;
+}
 
+.task-box {
+    margin: 0 auto;
+    width: 80%; /* 必要に応じて調整 */
+
+    /* 子要素を左寄せに */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* ← 子要素を左寄せに */
+}
+
+input {
+    background-color: var(--main-color2);
+    height: 50px;
+    width: 100%;
+    color: var(--main-color1);
+}
+
+.close-btn {
+    display: block;
+    width: 50px; /*枠の大きさ*/
+    height: 50px; /*枠の大きさ*/
+    background: #ccc;
+    position: relative;
+    border-radius: 50px;
+}
+.close-btn::before,
+.close-btn::after {
+    content: '';
+    display: block;
+    width: 98%; /*バツ線の長さ*/
+    height: 8px; /*バツ線の太さ*/
+    background: #000;
+    transform: rotate(45deg);
+    transform-origin: 0% 50%;
+    position: absolute;
+    top: calc(14% - 4px);
+    left: 14%;
+}
+
+.close-btn::after {
+    transform: rotate(-45deg);
+    transform-origin: 100% 50%;
+    left: auto;
+    right: 14%;
+}
+
+h3 {
+    font-size: 24px;
+}
+
+.item {
+    margin-bottom: 5px;
+}
+
+.nonflex-btn,
+.flex-btn {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+}
+
+.flex-btn{
+    display: flex;
+    justify-content:space-around
+}
+
+/* カレンダー */
+.fc-daygrid-day {
+    background-color: #f7f7f7;
+}
+
+.cal-container {
+    width: 1000px;
+    height: 80vh;
+    margin: auto;
+}
+
+.fc-today-button {
+    margin-left: 2px !important;
+    height: auto;
+    width: auto;
+}
+
+.fc .fc-button {
+    writing-mode: horizontal-tb !important;
+    white-space: nowrap !important;
+    /* font-size: 14px; */
+    padding: 6px 10px;
+    /* font-size: 1.5em; */
+    /* vertical-align: middle; */
+}
+
+.fc-scrollgrid-section {
+    border: solid 1px var(--main-color4) !important;
 }

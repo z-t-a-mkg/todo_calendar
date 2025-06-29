@@ -23,6 +23,7 @@ export const TopScreen = () => {
 
     const [editTask, setEditTask] = useState<eventType | null>(null); //タスク編集
     const [isEditing, setIsEditing] = useState(false);
+
     // ----------副作用----------------
 
     // タスク入力フォームにフォーカス
@@ -34,19 +35,19 @@ export const TopScreen = () => {
 
     // ----------カレンダー処理----------------
 
-    // 日付クリック
+    // 日付クリック(登録)
     const handleCalender = (info: DateClickArg) => {
         setSelectedDate(info.dateStr);
         setIsEditing(false); //編集モード解除
         setIsModalOpen(true);
     };
 
-    // タスクアイコンクリック
-    const handleEditCalender = (info: EventClickArg) => {
+    // タスクアイコンクリック(編集用)
+    const handleEditTask = (info: EventClickArg) => {
         setEditTask({
             id: info.event.id,
             title: info.event.title,
-             date: info.event.start?.toISOString().slice(0, 10) ?? '',
+            date: info.event.start?.toISOString().slice(0, 10) ?? '',
         });
         setIsEditing(true);
         setIsModalOpen(true);
@@ -85,6 +86,7 @@ export const TopScreen = () => {
     const handleClose = () => {
         setIsModalOpen(false);
         setInputTask('');
+        setErrorMessage(null);
     };
 
     // ----------タスク編集----------------
@@ -97,6 +99,28 @@ export const TopScreen = () => {
             ),
         );
         setIsModalOpen(false);
+    };
+
+    const handleSubmitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setEditTask(prev => (prev ? { ...prev, title: value } : prev));
+
+        if (value.length > 30) {
+            setErrorMessage('30文字を超えました');
+        } else {
+            setErrorMessage(null);
+        }
+    };
+
+    const handleDeleteSubmit = () => {
+        if (!editTask) return;
+
+        setEvents(prev => prev.filter(event => event.id !== editTask.id));
+        setIsModalOpen(false);
+        setEditTask(null); // 念のため編集中のタスクもリセット
+        setIsEditing(false); // 編集モード終了
+        setErrorMessage(null);
+
     };
 
     return (
@@ -120,30 +144,37 @@ export const TopScreen = () => {
                     setEditTask={setEditTask}
                     onClose={handleClose}
                     onSubmit={handleEditSubmit}
+                    onDelete={handleDeleteSubmit}
+                    errorMessage={errorMessage}
                     inputRef={ref}
+                    handleSubmitChange={handleSubmitChange}
                 />
             )}
-            <FullCalendar
-                //プラグイン設定
-                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                initialView="dayGridMonth"
-                locales={[jaLocale]}
-                //日本語
-                locale="ja"
-                // ボタン類の位置
-                headerToolbar={{
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek',
-                }}
-                //日付クリック
-                dateClick={handleCalender}
-                eventClick={handleEditCalender}
-                //ドラッグアンドドロップ可能
-                editable={true}
-                //追加後
-                events={events}
-            />
+
+            <div className="cal-container">
+                <FullCalendar
+                    height="100%"
+                    //プラグイン設定
+                    plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                    initialView="dayGridMonth"
+                    locales={[jaLocale]}
+                    //日本語
+                    locale="ja"
+                    // ボタン類の位置
+                    headerToolbar={{
+                        start: 'prevYear,prev,next,nextYear,today',
+                        center: 'title',
+                        end: 'dayGridMonth,timeGridWeek',
+                    }}
+                    //日付クリック
+                    dateClick={handleCalender}
+                    eventClick={handleEditTask}
+                    //ドラッグアンドドロップ可能
+                    editable={true}
+                    //追加後
+                    events={events}
+                />
+            </div>
         </>
     );
 };
