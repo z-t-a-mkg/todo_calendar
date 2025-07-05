@@ -100,6 +100,8 @@ button:focus-visible {
 .modal_content {
     position: relative;
     height: 100%;
+    padding-top: 15px;
+
 }
 
 .task-box {
@@ -125,7 +127,11 @@ input {
     height: 50px; /*枠の大きさ*/
     background: #ccc;
     position: relative;
-    border-radius: 50px;
+    position:absolute;
+    top:8px;
+    right:8px;
+    border-radius: 2px;
+
 }
 .close-btn::before,
 .close-btn::after {

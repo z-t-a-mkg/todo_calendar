@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type { eventType } from '../Type/Types';
 
+import { supabase } from '../supabaseClient';
+
 // FullCalendar
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -33,6 +35,21 @@ export const TopScreen = () => {
         }
     }, [isModalOpen]);
 
+    //DB初期読み込み
+    useEffect(() => {
+        const fetchTasks = async () => {
+            const { data, error } = await supabase.from('tb_todo_cal').select('*');
+            if (error) {
+                console.error('Fetch error:', error);
+                return;
+            }
+            if (data) {
+                setEvents(data);
+            }
+        };
+        fetchTasks();
+    }, []);
+
     // ----------カレンダー処理----------------
 
     // 日付クリック(登録)
@@ -56,15 +73,21 @@ export const TopScreen = () => {
     // ----------タスク入力----------------
 
     // タスク「追加ボタン」クリック処理
-    const handleAddClick = (): void => {
-        setEvents([
-            ...events,
-            {
-                id: Math.random().toString(10).slice(2, 8),
-                title: inputTask,
-                date: selectedDate,
-            },
-        ]);
+    const handleAddClick = async (): Promise<void> => {
+        const { data, error } = await supabase
+            .from('tb_todo_cal')
+            .insert([{ title: inputTask, date: selectedDate }])
+            .select();
+
+        if (error) {
+            console.error('登録エラー:', error.message);
+            return;
+        }
+
+        if (data && data.length > 0) {
+            setEvents([...events, data[0]]);
+        }
+
         setIsModalOpen(false);
         setInputTask('');
         setErrorMessage(null);
@@ -90,10 +113,27 @@ export const TopScreen = () => {
     };
 
     // ----------タスク編集----------------
-    const handleEditSubmit = () => {
+
+    // 編集ボタンクリック
+    const handleEditSubmit = async () => {
+        if (!editTask) return;
+
+        const { error } = await supabase
+            .from('tb_todo_cal')
+            .update({
+                title: editTask.title,
+                date: editTask.date,
+            })
+            .eq('id', editTask.id);
+
+        if (error) {
+            console.error('Update error:', error);
+            return;
+        }
+
         setEvents(prev =>
             prev.map(event =>
-                event.id === editTask?.id
+                event.id === editTask.id
                     ? { ...event, title: editTask.title, date: editTask.date }
                     : event,
             ),
@@ -112,15 +152,29 @@ export const TopScreen = () => {
         }
     };
 
-    const handleDeleteSubmit = () => {
+    // 削除ボタンクリック
+    const handleDeleteSubmit = async () => {
         if (!editTask) return;
 
-        setEvents(prev => prev.filter(event => event.id !== editTask.id));
-        setIsModalOpen(false);
-        setEditTask(null); // 念のため編集中のタスクもリセット
-        setIsEditing(false); // 編集モード終了
-        setErrorMessage(null);
+        const { error } = await supabase.from('tb_todo_cal').delete().eq('id', editTask.id);
 
+        if (error) {
+            console.error('削除エラー:', error.message);
+            return;
+        }
+
+        // DBと一致するように再取得
+        const { data, error: fetchError } = await supabase.from('tb_todo_cal').select('*');
+        if (fetchError) {
+            console.error('再取得エラー:', fetchError.message);
+            return;
+        }
+        setEvents(data ?? []);
+
+        setEditTask(null);
+        setIsModalOpen(false);
+        setIsEditing(false);
+        setErrorMessage(null);
     };
 
     return (
