@@ -146,8 +146,8 @@ export const TopScreen = () => {
         const value = e.target.value;
         setEditTask(prev => (prev ? { ...prev, title: value } : prev));
 
-        if (value.length > 40) {
-            setErrorMessage('40文字を超えました');
+        if (value.length > 30) {
+            setErrorMessage('30文字を超えました');
         } else {
             setErrorMessage(null);
         }
@@ -206,7 +206,7 @@ export const TopScreen = () => {
                 />
             )}
 
-            <div className="cal-container test_container">
+            <div className="cal-container">
                 <FullCalendar
                     height="100%"
                     //プラグイン設定
@@ -229,7 +229,7 @@ export const TopScreen = () => {
                     //追加後
                     events={events}
                 />
-            </div>
+            </>
         </>
     );
 };
