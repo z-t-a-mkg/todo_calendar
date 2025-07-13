@@ -14,6 +14,7 @@ import { TaskModal } from './TaskInputForm';
 import { EditTaskForm } from './EditTaskForm';
 import type { EventClickArg } from '@fullcalendar/core';
 
+
 export const TopScreen = () => {
     // ----------state管理----------------
     const [isModalOpen, setIsModalOpen] = useState(false); // modal開閉管理
@@ -145,8 +146,8 @@ export const TopScreen = () => {
         const value = e.target.value;
         setEditTask(prev => (prev ? { ...prev, title: value } : prev));
 
-        if (value.length > 20) {
-            setErrorMessage('20文字を超えました');
+        if (value.length > 30) {
+            setErrorMessage('30文字を超えました');
         } else {
             setErrorMessage(null);
         }
@@ -205,9 +206,7 @@ export const TopScreen = () => {
                 />
             )}
 
-
-            <div className="cal-container h-screen">
-            <div>Title</div>
+            <div className="cal-container">
                 <FullCalendar
                     height="100%"
                     //プラグイン設定
@@ -230,7 +229,7 @@ export const TopScreen = () => {
                     //追加後
                     events={events}
                 />
-            </div>
+            </>
         </>
     );
 };
